@@ -1,3 +1,7 @@
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
 resource "aws_vpc" "vpc" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
@@ -10,14 +14,15 @@ resource "aws_db_subnet_group" "default" {
 
 
 resource "aws_subnet" "main" {
-  vpc_id     = aws_vpc.vpc.id
-  cidr_block = "10.0.10.0/24"
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = "10.0.10.0/24"
+  availability_zone = data.aws_availability_zones.available.names[0]
 }
 
 resource "aws_subnet" "secondary" {
   vpc_id            = aws_vpc.vpc.id
   cidr_block        = "10.0.11.0/24"
-  availability_zone = "us-east-1f"
+  availability_zone = data.aws_availability_zones.available.names[1]
 }
 
 resource "aws_internet_gateway" "gw" {
